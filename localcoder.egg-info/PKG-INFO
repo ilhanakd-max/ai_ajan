@@ -1,0 +1,97 @@
+Metadata-Version: 2.4
+Name: localcoder
+Version: 0.1.0
+Summary: A terminal-based AI coding assistant powered by local Ollama models and Needle skill routing
+Author-email: LocalCoder Team <localcoder@example.com>
+License: MIT
+Keywords: ai,coding,assistant,ollama,cli,agent
+Classifier: Development Status :: 3 - Alpha
+Classifier: Environment :: Console
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: POSIX :: Linux
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Topic :: Software Development
+Requires-Python: >=3.12
+Description-Content-Type: text/markdown
+Requires-Dist: typer>=0.9.0
+Requires-Dist: rich>=13.7.0
+Requires-Dist: pydantic>=2.5.0
+Requires-Dist: httpx>=0.25.0
+Requires-Dist: jinja2>=3.1.2
+Requires-Dist: watchdog>=3.0.0
+Requires-Dist: pyyaml>=6.0.1
+Requires-Dist: tomlkit>=0.12.0
+Requires-Dist: click>=8.1.0
+Provides-Extra: dev
+Requires-Dist: pytest>=7.4.0; extra == "dev"
+Requires-Dist: pytest-asyncio>=0.21.0; extra == "dev"
+Requires-Dist: pytest-cov>=4.1.0; extra == "dev"
+Requires-Dist: black>=23.11.0; extra == "dev"
+Requires-Dist: ruff>=0.1.0; extra == "dev"
+Requires-Dist: mypy>=1.7.0; extra == "dev"
+
+# LocalCoder
+
+A terminal-based AI coding assistant powered by local Ollama models and Needle skill routing.
+
+## Features
+
+- **Local Execution**: Runs entirely on your computer using Ollama models
+- **Skill-Based Architecture**: Modular skills powered by Needle routing engine
+- **Autonomous Agent**: Multi-step reasoning and task execution
+- **Safe Shell Execution**: Permission-based command execution
+- **Git Integration**: Commit, diff, and version control support
+- **Persistent Memory**: SQLite-backed project memory
+- **Rich CLI**: Interactive chat with streaming responses
+
+## Installation
+
+```bash
+pip install -e .
+```
+
+## Quick Start
+
+```bash
+# Start interactive chat
+localcoder chat
+
+# Ask a question
+localcoder ask "Explain this codebase"
+
+# Generate code
+localcoder code "Create a Flask REST API"
+
+# Edit a file
+localcoder edit app.py "Add JWT authentication"
+
+# Run tests
+localcoder test
+
+# Fix issues
+localcoder fix
+
+# Commit changes
+localcoder commit
+```
+
+## Requirements
+
+- Python 3.12+
+- Ollama installed and running
+- Linux (tested on Linux Mint)
+
+## Documentation
+
+See the `docs/` directory for detailed documentation:
+
+- [Installation Guide](docs/INSTALL.md)
+- [Architecture](docs/ARCHITECTURE.md)
+- [Skills System](docs/SKILLS.md)
+- [Configuration](docs/CONFIGURATION.md)
+- [Examples](docs/EXAMPLES.md)
+
+## License
+
+MIT License
