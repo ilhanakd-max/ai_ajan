@@ -84,6 +84,7 @@ def code(
     ),
     model: Optional[str] = typer.Option(None, "-m", "--model", help="Model to use"),
     dry_run: bool = typer.Option(False, "--dry-run", help="Show what would be done"),
+    explain_only: bool = typer.Option(False, "--explain-only", help="Only explain, don't execute"),
 ) -> None:
     """Generate code based on instructions."""
     from localcoder.agent.coding import CodingAgent
@@ -97,8 +98,15 @@ def code(
     console.print(f"[bold blue]Instruction:[/bold blue] {instruction}")
     if dry_run:
         console.print("[yellow]Dry run mode - no changes will be made[/yellow]")
+    elif explain_only:
+        console.print("[yellow]Explain-only mode - showing what would be done[/yellow]")
 
-    agent = CodingAgent(settings=settings, project_root=root, dry_run=dry_run)
+    agent = CodingAgent(
+        settings=settings,
+        project_root=root,
+        dry_run=dry_run,
+        auto_execute=not (dry_run or explain_only),
+    )
     asyncio.run(agent.execute(instruction))
 
 

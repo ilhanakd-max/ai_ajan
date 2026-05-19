@@ -1,0 +1,30 @@
+{
+  "examples": [
+    {
+      "request": "Create a Hello World page in index.html",
+      "tools": [
+        {
+          "name": "write_file",
+          "arguments": {
+            "path": "index.html",
+            "content": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>Hello World</title>\n    <style>\n        body {\n            font-family: Arial, sans-serif;\n            display: flex;\n            justify-content: center;\n            align-items: center;\n            min-height: 100vh;\n            margin: 0;\n            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);\n        }\n        .container {\n            text-align: center;\n            color: white;\n        }\n        h1 {\n            font-size: 3rem;\n            margin-bottom: 1rem;\n        }\n    </style>\n</head>\n<body>\n    <div class=\"container\">\n        <h1>Hello, World!</h1>\n        <p>Welcome to my webpage!</p>\n    </div>\n</body>\n</html>"
+          }
+        }
+      ],
+      "result": "Created index.html with a responsive Hello World page"
+    },
+    {
+      "request": "Make a landing page with a hero section",
+      "tools": [
+        {
+          "name": "write_file",
+          "arguments": {
+            "path": "landing.html",
+            "content": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>Landing Page</title>\n    <style>\n        * { margin: 0; padding: 0; box-sizing: border-box; }\n        .hero {\n            min-height: 100vh;\n            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);\n            display: flex;\n            align-items: center;\n            justify-content: center;\n            text-align: center;\n            color: white;\n            padding: 2rem;\n        }\n        .hero h1 { font-size: 3.5rem; margin-bottom: 1rem; }\n        .hero p { font-size: 1.25rem; max-width: 600px; margin-bottom: 2rem; }\n        .cta-button {\n            display: inline-block;\n            padding: 1rem 2rem;\n            background: white;\n            color: #1e3c72;\n            text-decoration: none;\n            border-radius: 50px;\n            font-weight: bold;\n            transition: transform 0.3s;\n        }\n        .cta-button:hover { transform: scale(1.05); }\n    </style>\n</head>\n<body>\n    <section class=\"hero\">\n        <div>\n            <h1>Welcome to Our Product</h1>\n            <p>The best solution for all your needs. Get started today and see the difference.</p>\n            <a href=\"#\" class=\"cta-button\">Get Started</a>\n        </div>\n    </section>\n</body>\n</html>"
+          }
+        }
+      ],
+      "result": "Created landing.html with a modern hero section"
+    }
+  ]
+}

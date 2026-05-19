@@ -1,31 +1,36 @@
-"""Editing agent for file modifications."""
+"""Editing agent for file modifications with autonomous execution."""
 
 from pathlib import Path
 
-from localcoder.agent.base import BaseAgent
+from localcoder.agent.autonomous import AutonomousAgent
 from localcoder.config.settings import Settings
 
 
-class EditingAgent(BaseAgent):
-    """Agent for editing existing files."""
+class EditingAgent(AutonomousAgent):
+    """Agent for editing existing files with autonomous tool execution."""
 
     def _get_system_prompt(self) -> str:
-        return """You are LocalCoder, an expert AI coding assistant.
-You help users modify existing files based on their instructions.
+        return """You are LocalCoder, an AUTONOMOUS coding assistant.
+
+CRITICAL RULES:
+1. You MUST execute tools directly when they are available for the task.
+2. NEVER tell the user how to use terminal commands, editors, or shell utilities.
+3. NEVER provide step-by-step instructions for actions you can perform yourself.
+4. Your default behavior is ACTION, not INSTRUCTION.
 
 When editing files:
-1. First read the file to understand its current state
+1. First READ the file using read_file tool
 2. Plan your changes carefully
-3. Use edit_file for targeted changes or write_file for larger rewrites
+3. USE edit_file for targeted changes or write_file for larger rewrites
 4. Preserve existing code style and conventions
-5. Explain what you changed
+5. EXECUTE the changes directly - don't just describe them
 
-Available tools:
+Available tools (USE THEM DIRECTLY):
 - read_file: Read file contents before editing
 - edit_file: Make targeted search/replace edits
 - write_file: Rewrite entire file if needed
 
-Always show the user what changes you're making."""
+Always EXECUTE the changes and report what was done."""
 
     def _register_tools(self) -> None:
         from localcoder.tools.filesystem import ReadFileTool, EditFileTool, WriteFileTool
@@ -34,40 +39,19 @@ Always show the user what changes you're making."""
         self.register_tool(EditFileTool())
         self.register_tool(WriteFileTool())
 
-    async def edit(self, file_path: str, instruction: str) -> None:
-        """Edit a file based on instructions."""
+    async def edit(self, file_path: str, instruction: str) -> str:
+        """Edit a file based on instructions autonomously."""
         from localcoder.utils.rich import create_rich_console
 
         console = create_rich_console()
 
-        # Read the file first
-        console.print(f"[blue]Reading {file_path}...[/blue]")
-        success, result = await self.execute_tool("read_file", path=file_path)
-
-        if not success:
-            console.print(f"[red]Error reading file: {result}[/red]")
-            await self.close()
-            return
-
-        original_content = result
-
-        # Build prompt with file content
-        prompt = f"""I need to edit this file: {file_path}
-
-Current content:
-```
-{original_content}
-```
-
-Instruction: {instruction}
-
-Please provide the exact changes to make. Specify:
-1. The text to search for (old_text)
-2. The replacement text (new_text)
-
-Or if the changes are extensive, provide the complete new file content."""
-
-        response = await self.chat(prompt)
-        console.print(f"\n[green]{response}[/green]")
-
+        # Build the request with file path
+        request = f"Edit the file {file_path}: {instruction}"
+        
+        # Use the autonomous agent's execute method
+        result = await self.execute(request)
+        
+        console.print(f"\n[bold green]Result:[/bold green]\n{result}")
+        
         await self.close()
+        return result

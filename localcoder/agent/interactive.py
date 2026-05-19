@@ -1,4 +1,4 @@
-"""Interactive chat agent for LocalCoder."""
+"""Interactive chat agent for LocalCoder with autonomous tool execution."""
 
 import asyncio
 from pathlib import Path
@@ -9,40 +9,53 @@ from rich.markdown import Markdown
 from rich.panel import Panel
 from rich.prompt import Prompt
 
-from localcoder.agent.base import BaseAgent
+from localcoder.agent.autonomous import AutonomousAgent
 from localcoder.config.settings import Settings
 from localcoder.models.message import Message
 from localcoder.providers.ollama import StreamChunk
 from localcoder.utils.rich import create_rich_console
 
 
-class InteractiveAgent(BaseAgent):
-    """Interactive agent for chat sessions."""
+class InteractiveAgent(AutonomousAgent):
+    """Interactive agent for chat sessions with autonomous execution."""
 
     def __init__(
         self,
         settings: Settings,
         project_root: Path,
         console: Optional[Console] = None,
+        auto_execute: bool = True,
     ):
-        super().__init__(settings, project_root)
-        self.console = console or create_rich_console()
+        super().__init__(settings, project_root, console, auto_execute=auto_execute)
         self._running = True
 
     def _get_system_prompt(self) -> str:
-        return """You are LocalCoder, an expert AI coding assistant running in a terminal.
-You help users with coding tasks including:
-- Writing new code
-- Editing existing files
-- Debugging issues
-- Explaining code
-- Running commands and tests
-- Git operations
+        return """You are LocalCoder, an AUTONOMOUS coding agent running in a terminal.
 
-You have access to tools for file operations, shell commands, search, and git.
-When you need to make changes, use the appropriate tools.
-Always explain what you're doing before making changes.
-Be concise but thorough in your responses."""
+CRITICAL RULES:
+1. You MUST execute tools directly when they are available for the task.
+2. NEVER tell the user how to use terminal commands, editors, or shell utilities.
+3. NEVER provide step-by-step instructions for actions you can perform yourself.
+4. Your default behavior is ACTION, not INSTRUCTION.
+
+You help users with coding tasks including:
+- Writing new code (CREATE files directly)
+- Editing existing files (USE edit_file tool)
+- Debugging issues (READ files, RUN commands)
+- Explaining code (only explain when asked)
+- Running commands and tests (EXECUTE directly)
+- Git operations (COMMIT changes)
+
+When you need to make changes, use the appropriate tools IMMEDIATELY.
+Do NOT explain what commands to run - RUN them yourself.
+Do NOT tell users to open editors - EDIT files yourself.
+
+Only provide explanations when:
+- The user explicitly asks for an explanation
+- No tool exists to perform the task
+- Permission is denied
+
+Complete tasks autonomously whenever possible."""
 
     def _register_tools(self) -> None:
         from localcoder.tools.filesystem import (
@@ -151,28 +164,19 @@ Just type your message to chat with the AI."""
         self.console.print(Panel(tool_list, title="Available Tools", border_style="green"))
 
     async def _process_message(self, message: str) -> None:
-        """Process a user message."""
-        # Add user message to conversation
-        self.conversation.add_message(Message.user(message))
-
-        # Stream response
-        self.console.print("\n[bold blue]LocalCoder[/bold blue]:")
-
-        full_response = ""
-        async for chunk in self.provider.chat_stream(
-            messages=[
-                {"role": m.role.value, "content": m.content}
-                for m in self.conversation.messages
-            ],
-            system_prompt=self.conversation.system_prompt,
-            temperature=self.settings.temperature,
-            top_p=self.settings.top_p,
-        ):
-            self.console.print(chunk.content, end="", markup=False)
-            full_response += chunk.content
-            await asyncio.sleep(0.01)  # Small delay for smoother streaming
-
-        self.console.print()  # New line
-
-        # Add assistant response to conversation
-        self.conversation.add_message(Message.assistant(full_response))
+        """Process a user message with autonomous tool execution."""
+        # Use the autonomous agent's execute method
+        self._init_router()
+        
+        # Display analyzing status
+        self.console.print("\n[bold blue]Processing request...[/bold blue]")
+        
+        try:
+            # Execute the request autonomously
+            response = await self.execute(message)
+            
+            # Display the response
+            self.console.print(f"\n[bold green]Result:[/bold green]\n{response}")
+            
+        except Exception as e:
+            self.console.print(f"\n[red]Error: {str(e)}[/red]")
